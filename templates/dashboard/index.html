@@ -1,0 +1,44 @@
+{% extends "dashboard/base_in.html" %}
+{% load static %}
+
+{% block title %}{{title}}{% endblock %}
+
+{% block content %}
+<div class="content">
+  
+    <div class="container title" >
+        <div class="row">
+          <div class="col">
+            <h2>{{ title }}</h2>
+          </div>
+          <div class="col-lg-auto">
+            <input class="form-control me-2" type="search" placeholder="Buscar" aria-label="Search">
+          </div>
+          <div class="col-lg-auto">
+            <button class="btn btn-outline-info" type="submit">Buscar</button>
+          </div>
+        </div>
+    </div>
+    
+    <table class="table table-striped table-hover">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Fecha</th>
+          <th>Hora</th>
+        </tr>
+      </thead>
+      <tbody>
+        {%for user in users %}
+        <tr>
+          <td>{{user.first_name}} </td>
+          <td>{{user.email}} </td>
+          <td>{{user.hora}} </td>
+  
+        </tr>
+        {% endfor %}
+      </tbody>
+  
+    </table>
+</div>
+{% endblock %}

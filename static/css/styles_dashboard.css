@@ -1,0 +1,23 @@
+html, body{
+    height:100%;
+    width:100%;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+div.content {
+    margin: 50px 20px;
+    padding: 1px 16px;
+    height: 100%;
+}
+div.title {
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+input[type="text"], input[type="password"], input[type="search"], button{
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+  
+  
