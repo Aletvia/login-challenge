@@ -1,0 +1,80 @@
+{% extends "landingpage/base_out.html" %}
+
+{% load static %}
+
+{% block title %}{{title}}{% endblock %}
+
+{% block content %}
+<div class="login_container ">
+
+  {% if messages %}
+    {% for message in messages %}
+      {% if  message.tags == "error" %} 
+        <div class="alert alert-danger alert-dismissible fade show" 
+          role="alert">
+      {% else %}
+        <div class="alert alert-success alert-dismissible fade show" 
+          role="alert">
+      {% endif %}
+      {{message}}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+  {% endif %}
+
+  <div class="row d-flex h-100 justify-content-center align-items-center">
+      <div class="card col-auto ml-md-auto a_c align-self-center">
+          <h3 class="login-heading mb-4">¡Bienvenido de vuelta!</h3>
+
+          <form method="POST" >
+              {% csrf_token %}
+                <div class="form-floating">
+                  {{ form.username }}
+                  <label for="floatingPassword">Usuario</label>
+              </div>
+
+              <div class="form-floating mb-3">
+                {{ form.password }}
+                  <label for="floatingPassword">Contraseña</label>
+              </div>
+
+              <div class="d-grid gap-2 col-6 mx-auto">
+                  <button class="btn btn-outline-info rounded-pill" type="submit">Enviar</button>
+                  <button type="button" class="btn btn-link btn-sm"  data-bs-toggle="modal" data-bs-target="#modal_recover_pass">
+                    ¿Olvidaste tu contraseña?
+                  </button>
+              </div>
+            </form>
+
+            <!-- Vertically centered modal-->
+            <div class="modal fade" id="modal_recover_pass" tabindex="-1" role="dialog" aria-labelledby="modal_recover_pass"
+              aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Recuperar contraseña</h5>
+                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <p>Indica tu correo electrónico registrado para que podamos ponernos en contacto contigo.</p>
+                    <form action="{% url 'recover_pass' %}" method="POST">{% csrf_token %}
+                    <div class="form-floating">
+                      <input type="email" name="email" id="email" class="form-control" placeholder="Correo" required
+                        autofocus>
+                        <label for="floatingPassword">Correo</label>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button class="btn btn-outline-secondary rounded-pill" type="button" data-bs-dismiss="modal">Cancelar</button>
+
+                      <button class="btn btn btn-outline-primary rounded-pill" type="submit">Recuperar</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+      </div>
+  </div>
+</div>
+{% endblock %}
