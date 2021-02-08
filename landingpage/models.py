@@ -1,3 +1,12 @@
 from django.db import models
+from django.contrib.auth.models import User
 
-# Create your models here.
+"""
+Modelo que representa el registro de un inicio de sesión.
+"""
+class SessionHistory(models.Model):
+    date_login = models.DateField(auto_now_add=True)
+    time_login = models.TimeField(auto_now_add=True)
+    user_sesions = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_sessions')
+
+

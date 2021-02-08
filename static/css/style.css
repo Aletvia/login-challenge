@@ -1,0 +1,26 @@
+html, body{
+    height:100%;
+    width:100%;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+.login_container {
+    height:100%;
+    width:100%;
+    background: url('/static/images/login_background.jpg');
+    background-size: cover;
+    background-position: center;
+  }
+
+.card {
+    padding: 1rem;
+}
+
+input[type="text"], input[type="password"], input[type="search"]{
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+input:invalid:required {
+    background-image: linear-gradient(to right, lightblue, pink);
+  }
