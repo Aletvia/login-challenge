@@ -129,6 +129,15 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"), 
 ]
 
+# Date Formats
 DATE_FORMAT = '%d-%m-%Y'
 DATE_INPUT_FORMATS = '%d-%m-%Y'
 TIME_INPUT_FORMATS = '%H:%M'
+
+# Django Email settings
+EMAIL_BACKEND = config("EMAIL_BACKEND")
+EMAIL_HOST = config("EMAIL_HOST")
+EMAIL_USE_TLS = config("EMAIL_USE_TLS")
+EMAIL_PORT = config("EMAIL_PORT")
+EMAIL_HOST_USER = config("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
