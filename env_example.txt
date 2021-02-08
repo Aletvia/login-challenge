@@ -1,0 +1,16 @@
+DEBUG=True
+SECRET_KEY=your-secret-key
+
+SQL_ENGINE=django.db.backends.mysql
+SQL_DATABASE=your-database-name
+SQL_USER=your-db-user
+SQL_PASSWORD=your-db-password
+SQL_HOST=your-host
+SQL_PORT=your-db-port
+
+EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST=smtp.gmail.com
+EMAIL_USE_TLS=True
+EMAIL_PORT=587
+EMAIL_HOST_USER=your-email
+EMAIL_HOST_PASSWORD=your-password

@@ -8,7 +8,7 @@ urlpatterns = [
     path('logout', LogoutView,  name='logout_view'),
     path('mail-recover', RecoverPass.as_view(), name='recover_pass'),
     path('recover-password/<int:pk>', UserChangePassword.as_view(), name='change_pass'),
-    path('dashboard', Dashboard_view.as_view(), name='dashboard_view'),
+    path('dashboard', DashboardView.as_view(), name='dashboard_view'),
 ]
 
 

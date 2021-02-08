@@ -56,7 +56,7 @@ class LoginView(View):
 """
 Class View del historial de sesiones del usuario.
 """
-class Dashboard_view(LoginRequiredMixin, View):
+class DashboardView(LoginRequiredMixin, View):
     login_url = 'login_view'
     
     def get (self, request):
@@ -66,7 +66,16 @@ class Dashboard_view(LoginRequiredMixin, View):
             "history": history
             }
         return render(request, 'dashboard/index.html', contex)
-
+        
+    def post (self, request):
+        dt=request.POST.get('date_search')
+        print(dt)
+        history= SessionHistory.objects.filter(user_sesions=request.user, date_login=dt)
+        contex={
+            "title": "Inicios de sesión", 
+            "history": history
+            }
+        return render(request, 'dashboard/index.html', contex)
 
 """
 Class View para recuperar contraseña.
