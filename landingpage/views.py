@@ -1,3 +1,6 @@
+from datetime import datetime
+
+from django.conf import settings
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.views import View
@@ -5,28 +8,30 @@ from django.views.generic import ListView
 from django.contrib.auth import logout, authenticate, login
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from .forms import loginForm
+from .forms import LoginForm
+from .models import SessionHistory
 
 
 class login_view(View):
     def get (self, request):
         if request.session.exists(request.session.session_key):
             return redirect('dashboard_view')
-        form = loginForm()
+        form = LoginForm()
         contex={
-                "title":"Login",
+                "title": "Login",
                 "form": form
                 }
         return render(request, 'landingpage/auth-login.html', contex)
 
     def post (self, request):
         next = self.request.GET.get('next', '/dashboard')
-        form = loginForm(request.POST)
+        form = LoginForm(request.POST)
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
             user = authenticate(request, username=username, password=password)
             if user is not None:
+                SessionHistory.objects.create(user_sesions=user)
                 login(request, user)
                 return redirect(next)
             else:
@@ -48,7 +53,11 @@ class Dashboard_view(LoginRequiredMixin, View):
     login_url = 'login_view'
     
     def get (self, request):
-        contex={"title":"Inicios de sesión"}
+        history= SessionHistory.objects.filter(user_sesions=request.user)
+        contex={
+            "title": "Inicios de sesión", 
+            "history": history
+            }
         return render(request, 'dashboard/index.html', contex)
 
 

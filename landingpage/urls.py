@@ -1,6 +1,7 @@
 from django.urls import path, include
-from .views import *
 from django.contrib.auth import views as auth_views
+
+from .views import login_view, Dashboard_view, recover_pass, logout_view
 
 urlpatterns = [
     path('', login_view.as_view(), name='login_view'),
