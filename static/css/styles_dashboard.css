@@ -14,7 +14,7 @@ div.title {
 	margin-bottom: 20px;
 }
 
-input[type="text"], input[type="password"], input[type="search"], button{
+input[type="text"], input[type="password"], input[type="date"], button{
     margin-top: 1rem;
     margin-bottom: 1rem;
 }

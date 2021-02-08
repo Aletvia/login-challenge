@@ -7,20 +7,20 @@
 <div class="content">
   
     <div class="container title" >
+      <form action="{% url 'dashboard_view' %}" method="POST">
+        {% csrf_token %}
         <div class="row">
           <div class="col">
             <h2>{{ title }}</h2>
           </div>
-          <form action="{% url 'dashboard_view' %}" method="POST">
-            {% csrf_token %}
             <div class="col-lg-auto">
               <input id="date_search" name= "date_search" class="form-control me-2" type="date" placeholder="Buscar" aria-label="Search">
             </div>
             <div class="col-lg-auto">
               <button class="btn btn-outline-info" type="submit">Buscar</button>
             </div>
-          </form>
         </div>
+      </form>
     </div>
     
     <table class="table table-striped table-hover">

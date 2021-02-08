@@ -1,3 +1,5 @@
+from django.core.mail import EmailMultiAlternatives
+
 from django.core.mail import send_mail
 from django.conf import settings
 from django.shortcuts import render, redirect
@@ -17,7 +19,6 @@ Class View para inicio de sesión.
 """
 class LoginView(View):
     def get (self, request):
-        print()
         if request.session.exists(request.session.session_key):
             return redirect('dashboard_view')
         form = LoginForm()
@@ -115,15 +116,26 @@ class RecoverPass(View):
         if form.is_valid():
             email = form.cleaned_data['email']
             user_recover= User.objects.get(email=email)
-            msj = 'Hola, hemos recibido una solicitud para recuperación de contraseña. Si haz sido tú ingresa al siguiente link:<a href="http://127.0.0.1:8000/recover-password/'+ str(user_recover.id)+ '">Click</a>'
-            print(user_recover.password)
+            msj = """\
+                <html>
+                <head></head>
+                <body>
+                    <h3>Hola {name}</h3>
+                    <p>Hemos recibido una solicitud para recuperación de contraseña. <br>
+                        Si haz sido tú ingresa al siguiente link:<br>
+                        <a href="{host}recover-password/{id}">Recuperar contraseña</a><br>
+                        De lo contrario ignora este correo.
+                    </p>
+                </body>
+                </html>"""
+            
             try:
-                send_mail(
-                    'Recuperar contraseña',
-                    msj,
-                    settings.EMAIL_HOST_USER,
-                    [email]
-                )
+                subject, from_email, to = 'Recuperar contraseña', settings.EMAIL_HOST_USER, email
+                text_content = 'Hola '+user_recover.username
+                html_content = msj.format(name=user_recover.username, host=settings.URL_HOST, id=str(user_recover.id))
+                msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
+                msg.attach_alternative(html_content, "text/html")
+                msg.send()
                 messages.success(request, 'Se ha enviado un correo electrónico a la dirección solicitada.')
                 return redirect('login_view')
             except:
