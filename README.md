@@ -1,5 +1,4 @@
-UsersAndPermissions
-# Usuarios y permisos
+# Login challenge
 Desarrollo de un  proyecto con inicio y cierre de sesión, recuperación de contraseña y registro de inicios de sesión con filtro por fecha.
 
 ## Instalación
@@ -25,6 +24,6 @@ source venv/bin/activate
 ```shell script
 (venv) pip install -r PATH/requirements.txt
 ```
-4. Configurar las variable de su archivo .env para su entorno.
+4. Configurar las variable de su archivo .env para su entorno (archivo de ejemplo: env_example.txt).
 
 5. Si todo se encuentra en orden podrá ingresar a la siguiente dirección: http://127.0.0.1:8000/
