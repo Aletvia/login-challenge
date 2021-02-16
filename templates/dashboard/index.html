@@ -7,7 +7,7 @@
 <div class="content">
   
     <div class="container title" >
-      <form action="{% url 'dashboard_view' %}" method="POST">
+      <form method="GET">
         {% csrf_token %}
         <div class="row">
           <div class="col">
