@@ -1,6 +1,6 @@
 from django.core.mail import EmailMultiAlternatives
 
-from django.core.mail import send_mail
+from django.shortcuts import get_object_or_404
 from django.conf import settings
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -9,6 +9,7 @@ from django.views.generic import ListView
 from django.contrib.auth import logout, authenticate, login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
+from django.contrib.messages.views import SuccessMessageMixin
 
 from .forms import LoginForm, EmailForm, ChangePasswordForm
 from .models import SessionHistory
@@ -60,8 +61,8 @@ Class View del historial de sesiones del usuario.
 class DashboardView(LoginRequiredMixin, ListView):
     login_url = 'login_view'
     redirect_field_name = 'redirect_to'
-    template_name = 'dashboard/index.html'
     model = SessionHistory
+    template_name = 'dashboard/index.html'
     context_object_name = 'history'
     
     def get_queryset(self):
@@ -80,7 +81,9 @@ class DashboardView(LoginRequiredMixin, ListView):
 """
 Class View para recuperar contraseña.
 """
-class UserChangePassword(View):
+class UserChangePassword(SuccessMessageMixin, View):
+    login_url = 'login_view'
+    redirect_field_name = 'redirect_to'
 
     def get (self, request,pk):
         if request.session.exists(request.session.session_key):
@@ -114,37 +117,20 @@ class RecoverPass(View):
         form = EmailForm(request.POST)
         if form.is_valid():
             email = form.cleaned_data['email']
-            user_recover= User.objects.get(email=email)
-            msj = """\
-                <html>
-                <head></head>
-                <body>
-                    <h3>Hola {name}</h3>
-                    <p>Hemos recibido una solicitud para recuperación de contraseña. <br>
-                        Si haz sido tú ingresa al siguiente link:<br>
-                        <a href="{host}recover-password/{id}">Recuperar contraseña</a><br>
-                        De lo contrario ignora este correo.
-                    </p>
-                </body>
-                </html>"""
-            
             try:
-                subject, from_email, to = 'Recuperar contraseña', settings.EMAIL_HOST_USER, email
-                text_content = 'Hola '+user_recover.username
-                html_content = msj.format(name=user_recover.username, host=settings.URL_HOST, id=str(user_recover.id))
-                msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
-                msg.attach_alternative(html_content, "text/html")
-                msg.send()
-                messages.success(request, 'Se ha enviado un correo electrónico a la dirección solicitada.')
+                user_recover= User.objects.get(email=email)
+                result = form.send_email(user_recover)
+                if result['type']=='error':
+                    messages.error(request, result['msj'])
+                else:
+                    messages.success(request, result['msj'])
                 return redirect('login_view')
             except:
-                messages.error(request, 'Hubo un problema al enviar el correo, favor de intentar más tarde.')
+                messages.error(request, 'Correo no válido.')
                 return redirect('login_view')
         else:
-            messages.error(request, 'Correo no válido.')
+            messages.error(request, 'Formato de correo no válido.')
             return redirect('login_view')
-        messages.error(request, 'Datos no validos.')
-        return redirect('login_view')
 
 
 """
