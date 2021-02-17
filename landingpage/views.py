@@ -1,4 +1,6 @@
-from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives
+
+from django.shortcuts import get_object_or_404
 from django.conf import settings
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -7,6 +9,7 @@ from django.views.generic import ListView
 from django.contrib.auth import logout, authenticate, login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
+from django.contrib.messages.views import SuccessMessageMixin
 
 from .forms import LoginForm, EmailForm, ChangePasswordForm
 from .models import SessionHistory
@@ -17,7 +20,6 @@ Class View para inicio de sesión.
 """
 class LoginView(View):
     def get (self, request):
-        print()
         if request.session.exists(request.session.session_key):
             return redirect('dashboard_view')
         form = LoginForm()
@@ -56,31 +58,32 @@ class LoginView(View):
 """
 Class View del historial de sesiones del usuario.
 """
-class DashboardView(LoginRequiredMixin, View):
+class DashboardView(LoginRequiredMixin, ListView):
     login_url = 'login_view'
+    redirect_field_name = 'redirect_to'
+    model = SessionHistory
+    template_name = 'dashboard/index.html'
+    context_object_name = 'history'
     
-    def get (self, request):
-        history= SessionHistory.objects.filter(user_sesions=request.user)
-        contex={
-            "title": "Inicios de sesión", 
-            "history": history
-            }
-        return render(request, 'dashboard/index.html', contex)
-        
-    def post (self, request):
-        dt=request.POST.get('date_search')
-        print(dt)
-        history= SessionHistory.objects.filter(user_sesions=request.user, date_login=dt)
-        contex={
-            "title": "Inicios de sesión", 
-            "history": history
-            }
-        return render(request, 'dashboard/index.html', contex)
+    def get_queryset(self):
+        dt =  self.request.GET.get('date_search', None)
+        if dt:
+            return SessionHistory.objects.filter(user_sesions=self.request.user, date_login=dt)
+        else:
+            return SessionHistory.objects.filter(user_sesions=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = "Inicios de sesión"
+        return context
+
 
 """
 Class View para recuperar contraseña.
 """
-class UserChangePassword(View):
+class UserChangePassword(SuccessMessageMixin, View):
+    login_url = 'login_view'
+    redirect_field_name = 'redirect_to'
 
     def get (self, request,pk):
         if request.session.exists(request.session.session_key):
@@ -114,26 +117,20 @@ class RecoverPass(View):
         form = EmailForm(request.POST)
         if form.is_valid():
             email = form.cleaned_data['email']
-            user_recover= User.objects.get(email=email)
-            msj = 'Hola, hemos recibido una solicitud para recuperación de contraseña. Si haz sido tú ingresa al siguiente link:<a href="http://127.0.0.1:8000/recover-password/'+ str(user_recover.id)+ '">Click</a>'
-            print(user_recover.password)
             try:
-                send_mail(
-                    'Recuperar contraseña',
-                    msj,
-                    settings.EMAIL_HOST_USER,
-                    [email]
-                )
-                messages.success(request, 'Se ha enviado un correo electrónico a la dirección solicitada.')
+                user_recover= User.objects.get(email=email)
+                result = form.send_email(user_recover)
+                if result['type']=='error':
+                    messages.error(request, result['msj'])
+                else:
+                    messages.success(request, result['msj'])
                 return redirect('login_view')
             except:
-                messages.error(request, 'Hubo un problema al enviar el correo, favor de intentar más tarde.')
+                messages.error(request, 'Correo no válido.')
                 return redirect('login_view')
         else:
-            messages.error(request, 'Correo no válido.')
+            messages.error(request, 'Formato de correo no válido.')
             return redirect('login_view')
-        messages.error(request, 'Datos no validos.')
-        return redirect('login_view')
 
 
 """
